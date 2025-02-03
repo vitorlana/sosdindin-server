@@ -31,6 +31,11 @@ const ReportSchema = new mongoose.Schema({
       ref: 'Card'
     },
     tags: [String]
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 }, {
   timestamps: true,

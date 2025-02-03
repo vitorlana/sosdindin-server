@@ -13,18 +13,21 @@ expense-management/
 │   ├── Expense.js
 │   ├── Income.js
 │   └── Report.js
+│   └── User.js
 │
 ├── controllers/
 │   ├── cardController.js
 │   ├── expenseController.js
 │   ├── incomeController.js
 │   └── reportController.js
+│   └── userController.js
 │
 ├── routes/
 │   ├── cardRoutes.js
 │   ├── expenseRoutes.js
 │   ├── incomeRoutes.js
-│   └── reportRoutes.js
+│   ├── reportRoutes.js
+│   └── userRoutes.js
 │
 ├── services/
 │   ├── expenseService.js
@@ -73,6 +76,11 @@ expense-management/
 - `GET /api/reports/incomes`: Income report
 - `GET /api/reports/summary`: Overall financial summary
 
+### Users
+- `POST /api/users/register`: Register a new user
+- `POST /api/users/login`: Login a user
+- `GET /api/users/me`: Get user details
+
 ## Database Schema
 
 ### Card Model
@@ -105,6 +113,12 @@ expense-management/
 - endDate: Date
 - totalAmount: Number
 - details: Array
+
+### User Model
+- username: String
+- email: String
+- password: String
+- role: Enum (user, admin)
 ```
 
 ## Key Requirements Implementation Notes
@@ -116,5 +130,6 @@ expense-management/
 6. Tagging system for expenses and incomes
 7. Aggregation of expenses across cards
 8. Projection of future financial state
+9. User registration and authentication
 ```
 

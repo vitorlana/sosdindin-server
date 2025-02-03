@@ -11,6 +11,7 @@ const cardRoutes = require("./routes/cardRoutes");
 const expenseRoutes = require("./routes/expenseRoutes");
 const incomeRoutes = require("./routes/incomeRoutes");
 const reportRoutes = require("./routes/reportRoutes");
+const userRoutes = require("./routes/userRoutes"); // P2db3
 
 // Logger configuration
 const logger = winston.createLogger({
@@ -52,6 +53,7 @@ app.use("/api/cards", cardRoutes);
 app.use("/api/expenses", expenseRoutes);
 app.use("/api/incomes", incomeRoutes);
 app.use("/api/reports", reportRoutes);
+app.use("/api/users", userRoutes); // P2db3
 
 // 404 Handler
 app.use((req, res, next) => {
