@@ -51,7 +51,8 @@ class APITestSuite {
           closingDay: 15,
           dueDay: 25,
           cardType: 'Credit',
-          lastFourDigits: `123${i}`
+          lastFourDigits: `123${i}`,
+          user: 'testuser' // Assuming user ID is 'testuser'
         };
         const createResponse = await this.axios.post('/cards', newCard, {
           headers: { Authorization: `Bearer ${this.token}` }
@@ -97,7 +98,8 @@ class APITestSuite {
         closingDay: 15,
         dueDay: 25,
         cardType: 'Credit',
-        lastFourDigits: '5678'
+        lastFourDigits: '5678',
+        user: 'testuser' // Assuming user ID is 'testuser'
       }, {
         headers: { Authorization: `Bearer ${this.token}` }
       });
@@ -114,7 +116,8 @@ class APITestSuite {
           installments: {
             current: 1,
             total: 3
-          }
+          },
+          user: 'testuser' // Assuming user ID is 'testuser'
         };
         const createResponse = await this.axios.post('/expenses', newExpense, {
           headers: { Authorization: `Bearer ${this.token}` }
@@ -154,7 +157,8 @@ class APITestSuite {
           recurring: {
             isRecurring: true,
             frequency: 'Monthly'
-          }
+          },
+          user: 'testuser' // Assuming user ID is 'testuser'
         };
         const createResponse = await this.axios.post('/incomes', newIncome, {
           headers: { Authorization: `Bearer ${this.token}` }
