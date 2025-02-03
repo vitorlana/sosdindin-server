@@ -59,6 +59,11 @@ const ExpenseSchema = new mongoose.Schema({
     type: String,
     enum: Object.values(EXPENSE_STATUSES),
     default: EXPENSE_STATUSES.PENDING
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 }, {
   timestamps: true,

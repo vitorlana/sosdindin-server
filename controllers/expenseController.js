@@ -9,7 +9,10 @@ exports.createExpense = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const expense = new Expense(req.body);
+    const expense = new Expense({
+      ...req.body,
+      user: req.user.id
+    });
 
     // Handle card balance update for card expenses
     if (expense.type === 'Card' && expense.card) {
@@ -30,7 +33,7 @@ exports.createExpense = async (req, res) => {
 exports.getAllExpenses = async (req, res) => {
   try {
     const { type, tag, startDate, endDate } = req.query;
-    const filter = {};
+    const filter = { user: req.user.id };
 
     if (type) filter.type = type;
     if (tag) filter.tag = tag;

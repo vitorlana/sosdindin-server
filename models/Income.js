@@ -39,6 +39,11 @@ const IncomeSchema = new mongoose.Schema({
       enum: ['Daily', 'Weekly', 'Monthly', 'Yearly']
     },
     nextOccurrence: Date
+  },
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   }
 }, {
   timestamps: true,

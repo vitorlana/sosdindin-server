@@ -8,7 +8,10 @@ exports.createCard = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const card = new Card(req.body);
+    const card = new Card({
+      ...req.body,
+      user: req.user.id
+    });
     await card.save();
     
     res.status(201).json(card);
@@ -19,7 +22,7 @@ exports.createCard = async (req, res) => {
 
 exports.getAllCards = async (req, res) => {
   try {
-    const cards = await Card.find();
+    const cards = await Card.find({ user: req.user.id });
     res.json(cards);
   } catch (error) {
     res.status(500).json({ message: 'Error fetching cards', error: error.message });

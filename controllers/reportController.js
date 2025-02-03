@@ -10,7 +10,8 @@ exports.generateExpenseReport = async (req, res) => {
       date: {
         $gte: new Date(startDate || Date.now() - 30 * 24 * 60 * 60 * 1000),
         $lte: new Date(endDate || Date.now())
-      }
+      },
+      user: req.user.id
     };
 
     if (cardId) filter.card = cardId;
@@ -41,7 +42,8 @@ exports.generateExpenseReport = async (req, res) => {
         date: new Date(exp._id.year, exp._id.month - 1),
         amount: exp.total,
         category: exp._id.tag
-      }))
+      })),
+      user: req.user.id
     });
 
     await report.save();
@@ -61,7 +63,8 @@ exports.generateIncomeReport = async (req, res) => {
       date: {
         $gte: new Date(startDate || Date.now() - 30 * 24 * 60 * 60 * 1000),
         $lte: new Date(endDate || Date.now())
-      }
+      },
+      user: req.user.id
     };
 
     if (source) filter.source = source;
@@ -92,7 +95,8 @@ exports.generateIncomeReport = async (req, res) => {
         date: new Date(inc._id.year, inc._id.month - 1),
         amount: inc.total,
         category: inc._id.source
-      }))
+      })),
+      user: req.user.id
     });
 
     await report.save();
@@ -115,11 +119,11 @@ exports.generateFinancialSummary = async (req, res) => {
 
     const [expenses, incomes] = await Promise.all([
       Expense.aggregate([
-        { $match: { date: dateFilter } },
+        { $match: { date: dateFilter, user: req.user.id } },
         { $group: { _id: null, total: { $sum: '$amount' } } }
       ]),
       Income.aggregate([
-        { $match: { date: dateFilter } },
+        { $match: { date: dateFilter, user: req.user.id } },
         { $group: { _id: null, total: { $sum: '$amount' } } }
       ])
     ]);
@@ -138,7 +142,8 @@ exports.generateFinancialSummary = async (req, res) => {
           category: 'Total Expenses', 
           amount: expenses[0]?.total || 0 
         }
-      ]
+      ],
+      user: req.user.id
     });
 
     await report.save();

@@ -4,10 +4,12 @@ class APITestSuite {
   constructor(baseURL = 'http://localhost:3000/api') {
     this.baseURL = baseURL;
     this.axios = axios.create({ baseURL });
+    this.token = null;
   }
 
   async runAllTests() {
     console.log('Starting API Test Suite...');
+    await this.testUserOperations();
     await this.testCardOperations();
     await this.testExpenseOperations();
     await this.testIncomeOperations();
@@ -15,34 +17,71 @@ class APITestSuite {
     console.log('API Test Suite Completed.');
   }
 
+  async testUserOperations() {
+    console.log('\n--- User Operations Tests ---');
+    try {
+      // Register User
+      const newUser = {
+        username: 'testuser',
+        email: 'testuser@example.com',
+        password: 'password123'
+      };
+      const registerResponse = await this.axios.post('/users/register', newUser);
+      console.log('User Registration ✓', registerResponse.data.message);
+
+      // Login User
+      const loginResponse = await this.axios.post('/users/login', {
+        email: newUser.email,
+        password: newUser.password
+      });
+      this.token = loginResponse.data.token;
+      console.log('User Login ✓', this.token);
+    } catch (error) {
+      console.error('User Operations Test Failed:', error.response?.data || error.message);
+    }
+  }
+
   async testCardOperations() {
     console.log('\n--- Card Operations Tests ---');
     try {
-      // Create Card
-      const newCard = {
-        name: 'Test Credit Card',
+      // Create 5 Credit Cards
+      for (let i = 1; i <= 5; i++) {
+        const newCard = {
+          name: `Test Credit Card ${i}`,
+          closingDay: 15,
+          dueDay: 25,
+          cardType: 'Credit',
+          lastFourDigits: `123${i}`
+        };
+        const createResponse = await this.axios.post('/cards', newCard, {
+          headers: { Authorization: `Bearer ${this.token}` }
+        });
+        console.log(`Card Creation ${i} ✓`, createResponse.data._id);
+      }
+
+      // Get All Cards
+      const listResponse = await this.axios.get('/cards', {
+        headers: { Authorization: `Bearer ${this.token}` }
+      });
+      console.log('Card Listing ✓', listResponse.data.length);
+
+      // Update Card
+      const cardId = listResponse.data[0]._id;
+      const updateResponse = await this.axios.put(`/cards/${cardId}`, {
+        name: 'Updated Test Card',
         closingDay: 15,
         dueDay: 25,
         cardType: 'Credit',
         lastFourDigits: '1234'
-      };
-      const createResponse = await this.axios.post('/cards', newCard);
-      console.log('Card Creation ✓', createResponse.data._id);
-
-      // Get All Cards
-      const listResponse = await this.axios.get('/cards');
-      console.log('Card Listing ✓', listResponse.data.length);
-
-      // Update Card
-      const cardId = createResponse.data._id;
-      const updateResponse = await this.axios.put(`/cards/${cardId}`, {
-        ...newCard,
-        name: 'Updated Test Card'
+      }, {
+        headers: { Authorization: `Bearer ${this.token}` }
       });
       console.log('Card Update ✓', updateResponse.data.name);
 
       // Delete Card
-      await this.axios.delete(`/cards/${cardId}`);
+      await this.axios.delete(`/cards/${cardId}`, {
+        headers: { Authorization: `Bearer ${this.token}` }
+      });
       console.log('Card Deletion ✓');
     } catch (error) {
       console.error('Card Operations Test Failed:', error.response?.data || error.message);
@@ -59,33 +98,42 @@ class APITestSuite {
         dueDay: 25,
         cardType: 'Credit',
         lastFourDigits: '5678'
+      }, {
+        headers: { Authorization: `Bearer ${this.token}` }
       });
       const cardId = cardResponse.data._id;
 
-      // Create Expense
-      const newExpense = {
-        type: 'Card',
-        amount: 250.50,
-        date: new Date(),
-        card: cardId,
-        tag: 'Test Expense',
-        installments: {
-          current: 1,
-          total: 3
-        }
-      };
-      const createResponse = await this.axios.post('/expenses', newExpense);
-      console.log('Expense Creation ✓', createResponse.data._id);
+      // Create Expenses for 2 Months
+      for (let month = 0; month < 2; month++) {
+        const newExpense = {
+          type: 'Card',
+          amount: 250.50,
+          date: new Date(new Date().setMonth(new Date().getMonth() - month)),
+          card: cardId,
+          tag: 'Test Expense',
+          installments: {
+            current: 1,
+            total: 3
+          }
+        };
+        const createResponse = await this.axios.post('/expenses', newExpense, {
+          headers: { Authorization: `Bearer ${this.token}` }
+        });
+        console.log(`Expense Creation Month ${month + 1} ✓`, createResponse.data._id);
+      }
 
       // Get Expenses
-      const listResponse = await this.axios.get('/expenses');
+      const listResponse = await this.axios.get('/expenses', {
+        headers: { Authorization: `Bearer ${this.token}` }
+      });
       console.log('Expense Listing ✓', listResponse.data.length);
 
       // Update Expense
-      const expenseId = createResponse.data._id;
+      const expenseId = listResponse.data[0]._id;
       const updateResponse = await this.axios.put(`/expenses/${expenseId}`, {
-        ...newExpense,
         amount: 300.75
+      }, {
+        headers: { Authorization: `Bearer ${this.token}` }
       });
       console.log('Expense Update ✓', updateResponse.data.amount);
     } catch (error) {
@@ -96,29 +144,36 @@ class APITestSuite {
   async testIncomeOperations() {
     console.log('\n--- Income Operations Tests ---');
     try {
-      // Create Income
-      const newIncome = {
-        amount: 5000,
-        date: new Date(),
-        source: 'Salary',
-        tag: 'Monthly Income',
-        recurring: {
-          isRecurring: true,
-          frequency: 'Monthly'
-        }
-      };
-      const createResponse = await this.axios.post('/incomes', newIncome);
-      console.log('Income Creation ✓', createResponse.data._id);
+      // Create Incomes for 2 Months
+      for (let month = 0; month < 2; month++) {
+        const newIncome = {
+          amount: 5000,
+          date: new Date(new Date().setMonth(new Date().getMonth() - month)),
+          source: 'Salary',
+          tag: 'Monthly Income',
+          recurring: {
+            isRecurring: true,
+            frequency: 'Monthly'
+          }
+        };
+        const createResponse = await this.axios.post('/incomes', newIncome, {
+          headers: { Authorization: `Bearer ${this.token}` }
+        });
+        console.log(`Income Creation Month ${month + 1} ✓`, createResponse.data._id);
+      }
 
       // Get Incomes
-      const listResponse = await this.axios.get('/incomes');
+      const listResponse = await this.axios.get('/incomes', {
+        headers: { Authorization: `Bearer ${this.token}` }
+      });
       console.log('Income Listing ✓', listResponse.data.length);
 
       // Update Income
-      const incomeId = createResponse.data._id;
+      const incomeId = listResponse.data[0]._id;
       const updateResponse = await this.axios.put(`/incomes/${incomeId}`, {
-        ...newIncome,
         amount: 5500
+      }, {
+        headers: { Authorization: `Bearer ${this.token}` }
       });
       console.log('Income Update ✓', updateResponse.data.amount);
     } catch (error) {
@@ -130,15 +185,21 @@ class APITestSuite {
     console.log('\n--- Report Generation Tests ---');
     try {
       // Generate Expense Report
-      const expenseReportResponse = await this.axios.get('/reports/expenses');
+      const expenseReportResponse = await this.axios.get('/reports/expenses', {
+        headers: { Authorization: `Bearer ${this.token}` }
+      });
       console.log('Expense Report Generation ✓', expenseReportResponse.data);
 
       // Generate Income Report
-      const incomeReportResponse = await this.axios.get('/reports/incomes');
+      const incomeReportResponse = await this.axios.get('/reports/incomes', {
+        headers: { Authorization: `Bearer ${this.token}` }
+      });
       console.log('Income Report Generation ✓', incomeReportResponse.data);
 
       // Generate Financial Summary
-      const summaryResponse = await this.axios.get('/reports/summary');
+      const summaryResponse = await this.axios.get('/reports/summary', {
+        headers: { Authorization: `Bearer ${this.token}` }
+      });
       console.log('Financial Summary Generation ✓', summaryResponse.data);
     } catch (error) {
       console.error('Report Generation Test Failed:', error.response?.data || error.message);

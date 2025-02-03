@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const { body } = require('express-validator');
 
 class AuthMiddleware {
   // Verify JWT token
@@ -44,4 +45,21 @@ class AuthMiddleware {
   }
 }
 
-module.exports = AuthMiddleware;
+// Validation rules for user registration
+const userRegistrationValidation = [
+  body('username').trim().notEmpty().withMessage('Username is required'),
+  body('email').isEmail().withMessage('Invalid email format'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+];
+
+// Validation rules for user login
+const userLoginValidation = [
+  body('email').isEmail().withMessage('Invalid email format'),
+  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+];
+
+module.exports = {
+  AuthMiddleware,
+  userRegistrationValidation,
+  userLoginValidation
+};

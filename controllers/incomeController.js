@@ -8,7 +8,10 @@ exports.createIncome = async (req, res) => {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const income = new Income(req.body);
+    const income = new Income({
+      ...req.body,
+      user: req.user.id
+    });
     
     // Handle recurring income next occurrence
     if (income.recurring.isRecurring) {
@@ -31,7 +34,7 @@ exports.createIncome = async (req, res) => {
 exports.getAllIncomes = async (req, res) => {
   try {
     const { source, tag, startDate, endDate, status } = req.query;
-    const filter = {};
+    const filter = { user: req.user.id };
 
     if (source) filter.source = source;
     if (tag) filter.tag = tag;
