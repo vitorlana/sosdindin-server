@@ -1,32 +1,33 @@
-require('dotenv').config();
-const express = require('express');
-const mongoose = require('mongoose');
-const cors = require('cors');
-const helmet = require('helmet');
-const winston = require('winston');
+require("dotenv").config();
+const express = require("express");
+const mongoose = require("mongoose");
+const cors = require("cors");
+const helmet = require("helmet");
+const winston = require("winston");
+const database = require("./config/database");
 
 // Import routes
-const cardRoutes = require('./routes/cardRoutes');
-const expenseRoutes = require('./routes/expenseRoutes');
-const incomeRoutes = require('./routes/incomeRoutes');
-const reportRoutes = require('./routes/reportRoutes');
+const cardRoutes = require("./routes/cardRoutes");
+const expenseRoutes = require("./routes/expenseRoutes");
+const incomeRoutes = require("./routes/incomeRoutes");
+const reportRoutes = require("./routes/reportRoutes");
 
 // Logger configuration
 const logger = winston.createLogger({
-  level: process.env.LOG_LEVEL || 'info',
+  level: process.env.LOG_LEVEL || "info",
   format: winston.format.combine(
     winston.format.timestamp(),
     winston.format.errors({ stack: true }),
     winston.format.splat(),
-    winston.format.json()
+    winston.format.json(),
   ),
   transports: [
     new winston.transports.Console({
-      format: winston.format.simple()
+      format: winston.format.simple(),
     }),
-    new winston.transports.File({ filename: 'error.log', level: 'error' }),
-    new winston.transports.File({ filename: 'combined.log' })
-  ]
+    new winston.transports.File({ filename: "error.log", level: "error" }),
+    new winston.transports.File({ filename: "combined.log" }),
+  ],
 });
 
 const app = express();
@@ -44,24 +45,19 @@ app.use((req, res, next) => {
 });
 
 // Database Connection
-mongoose.connect(process.env.MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-  .then(() => logger.info('Connected to MongoDB'))
-  .catch(err => logger.error('MongoDB connection error:', err));
+database.connectDB();
 
 // Routes
-app.use('/api/cards', cardRoutes);
-app.use('/api/expenses', expenseRoutes);
-app.use('/api/incomes', incomeRoutes);
-app.use('/api/reports', reportRoutes);
+app.use("/api/cards", cardRoutes);
+app.use("/api/expenses", expenseRoutes);
+app.use("/api/incomes", incomeRoutes);
+app.use("/api/reports", reportRoutes);
 
 // 404 Handler
 app.use((req, res, next) => {
   res.status(404).json({
-    status: 'error',
-    message: 'Not Found'
+    status: "error",
+    message: "Not Found",
   });
 });
 
@@ -69,10 +65,11 @@ app.use((req, res, next) => {
 app.use((err, req, res, next) => {
   logger.error(err.stack);
   res.status(500).json({
-    status: 'error',
-    message: process.env.NODE_ENV === 'production'
-      ? 'Something went wrong!'
-      : err.message
+    status: "error",
+    message:
+      process.env.NODE_ENV === "production"
+        ? "Something went wrong!"
+        : err.message,
   });
 });
 
@@ -82,10 +79,10 @@ const server = app.listen(PORT, () => {
 });
 
 // Graceful shutdown
-process.on('SIGTERM', () => {
-  logger.info('SIGTERM received. Shutting down gracefully');
+process.on("SIGTERM", () => {
+  logger.info("SIGTERM received. Shutting down gracefully");
   server.close(() => {
-    logger.info('Process terminated');
+    logger.info("Process terminated");
     mongoose.connection.close(false, () => {
       process.exit(0);
     });
