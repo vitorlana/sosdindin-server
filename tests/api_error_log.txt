@@ -1,0 +1,84 @@
+
+--------------------------------------------------------------------------------
+{
+  "timestamp": "2025-02-04T03:03:13.059Z",
+  "context": "PUT /incomes/67a1837028fa0253c36b15b5",
+  "error": {
+    "message": "Request failed with status code 400",
+    "status": 400,
+    "statusText": "Bad Request",
+    "data": {
+      "errors": [
+        {
+          "type": "field",
+          "msg": "Invalid date format",
+          "path": "date",
+          "location": "body"
+        },
+        {
+          "type": "field",
+          "value": "",
+          "msg": "Income source is required",
+          "path": "source",
+          "location": "body"
+        }
+      ]
+    },
+    "config": {
+      "method": "put",
+      "url": "http://localhost:3000/api/incomes/67a1837028fa0253c36b15b5",
+      "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTE3NmVkNGYwN2Q2YjcxODkyMGY4OSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM4NjM4MTkyLCJleHAiOjE3MzkyNDI5OTJ9.hrDqfylzt9ijeM5dGT33z0giYavRbXKvCPGwbgQI8oo",
+        "User-Agent": "axios/1.7.9",
+        "Content-Length": "15",
+        "Accept-Encoding": "gzip, compress, deflate, br"
+      },
+      "data": "{\"amount\":5500}"
+    }
+  }
+}
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+{
+  "timestamp": "2025-02-04T03:03:13.060Z",
+  "context": "Update Operations",
+  "error": {
+    "message": "Request failed with status code 400",
+    "status": 400,
+    "statusText": "Bad Request",
+    "data": {
+      "errors": [
+        {
+          "type": "field",
+          "msg": "Invalid date format",
+          "path": "date",
+          "location": "body"
+        },
+        {
+          "type": "field",
+          "value": "",
+          "msg": "Income source is required",
+          "path": "source",
+          "location": "body"
+        }
+      ]
+    },
+    "config": {
+      "method": "put",
+      "url": "http://localhost:3000/api/incomes/67a1837028fa0253c36b15b5",
+      "headers": {
+        "Accept": "application/json, text/plain, */*",
+        "Content-Type": "application/json",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTE3NmVkNGYwN2Q2YjcxODkyMGY4OSIsInJvbGUiOiJ1c2VyIiwiaWF0IjoxNzM4NjM4MTkyLCJleHAiOjE3MzkyNDI5OTJ9.hrDqfylzt9ijeM5dGT33z0giYavRbXKvCPGwbgQI8oo",
+        "User-Agent": "axios/1.7.9",
+        "Content-Length": "15",
+        "Accept-Encoding": "gzip, compress, deflate, br"
+      },
+      "data": "{\"amount\":5500}"
+    }
+  }
+}
+--------------------------------------------------------------------------------

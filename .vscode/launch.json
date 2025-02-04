@@ -1,0 +1,28 @@
+{
+    "configurations": [
+      {
+        "type": "node",
+        "request": "launch",
+        "name": "Launch Program",
+        "program": "${workspaceFolder}/${input:programPath}",
+        "args": [],
+        "envFile": "${workspaceFolder}/src/.env",
+        "console": "integratedTerminal"
+      }
+    ],
+    "inputs": [
+      {
+        "type": "pickString",
+        "id": "programPath",
+        "description": "Select the entry point for your application",
+        "options": [
+          "src/app.js",
+          "src/routes/cardRoutes.js",
+          "src/routes/expenseRoutes.js",
+          "src/routes/incomeRoutes.js",
+          "src/routes/reportRoutes.js",
+          "src/routes/userRoutes.js"
+        ]
+      }
+    ]
+  }

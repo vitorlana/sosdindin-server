@@ -13,9 +13,9 @@ const incomeRoutes = require("./routes/incomeRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const userRoutes = require("./routes/userRoutes"); // P2db3
 
+const jwtInterceptor = require('./middlewares/jwtInterceptor');
+
 let server;
-
-
 
 // Logger configuration
 const logger = winston.createLogger({
@@ -42,6 +42,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(jwtInterceptor); // Add JWT interceptor before routes
 
 // Logging middleware
 app.use((req, res, next) => {

@@ -4,20 +4,12 @@ const { body } = require('express-validator');
 class AuthMiddleware {
   // Verify JWT token
   static authenticateToken(req, res, next) {
-    const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1];
-
-    if (token == null) {
-      return res.status(401).json({ message: 'No token provided' });
+    if (!req.user) {
+      return res.status(401).json({ 
+        message: req.jwtError?.message || 'Authentication required' 
+      });
     }
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (err) {
-        return res.status(403).json({ message: 'Invalid or expired token' });
-      }
-      req.user = user;
-      next();
-    });
+    next();
   }
 
   // Generate JWT token
@@ -55,7 +47,7 @@ const userRegistrationValidation = [
 // Validation rules for user login
 const userLoginValidation = [
   body('email').isEmail().withMessage('Invalid email format'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long')
+  body('password').notEmpty().withMessage('Password is required')
 ];
 
 module.exports = {

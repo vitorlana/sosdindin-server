@@ -10,7 +10,7 @@ exports.createCard = async (req, res) => {
 
     const card = new Card({
       ...req.body,
-      user: req.user.id
+      user: req.user.id 
     });
     await card.save();
     
