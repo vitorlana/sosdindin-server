@@ -3,7 +3,7 @@ const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const helmet = require("helmet");
-const winston = require("winston");
+const winston = require("../node_modules/winston");
 const database = require("./config/database");
 
 // Import routes
@@ -12,6 +12,10 @@ const expenseRoutes = require("./routes/expenseRoutes");
 const incomeRoutes = require("./routes/incomeRoutes");
 const reportRoutes = require("./routes/reportRoutes");
 const userRoutes = require("./routes/userRoutes"); // P2db3
+
+let server;
+
+
 
 // Logger configuration
 const logger = winston.createLogger({
@@ -76,9 +80,6 @@ app.use((err, req, res, next) => {
 });
 
 const PORT = process.env.PORT || 3000;
-const server = app.listen(PORT, () => {
-  logger.info(`Server running on port ${PORT}`);
-});
 
 // Graceful shutdown
 process.on("SIGTERM", () => {
@@ -91,4 +92,10 @@ process.on("SIGTERM", () => {
   });
 });
 
-module.exports = app;
+if (process.env.NODE_ENV !== 'test') {
+  server = app.listen(PORT, () => {
+    logger.info(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = { app, server };

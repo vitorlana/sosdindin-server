@@ -9,55 +9,147 @@ servers:
     description: Local development server
 
 paths:
-  /cards:
+  /users/register:
     post:
-      summary: Create a new card
+      summary: "Register a new user"
+      description: "Endpoint to register a new user"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Card'
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - email
+                - password
       responses:
-        '201':
-          description: Card created successfully
+        '200':
+          description: "User registered successfully"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Card'
-    get:
-      summary: List all cards
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: "Invalid input"
+        '500':
+          description: "Server error"
+
+  /users/login:
+    post:
+      summary: "Login a user"
+      description: "Endpoint to login a user"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - email
+                - password
       responses:
         '200':
-          description: List of cards
+          description: "User logged in successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: "Invalid credentials"
+        '500':
+          description: "Server error"
+
+  /cards:
+    post:
+      summary: "Create a new card"
+      description: "Endpoint to create a new card"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                closingDay:
+                  type: integer
+                dueDay:
+                  type: integer
+                cardType:
+                  type: string
+                lastFourDigits:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - name
+                - closingDay
+                - dueDay
+                - cardType
+                - lastFourDigits
+                - userId
+      responses:
+        '200':
+          description: "Card created successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  card:
+                    $ref: '#/components/schemas/Card'
+        '400':
+          description: "Invalid input"
+        '500':
+          description: "Server error"
+    get:
+      summary: "Get all cards"
+      description: "Endpoint to get all cards"
+      responses:
+        '200':
+          description: "Cards retrieved successfully"
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Card'
+        '500':
+          description: "Server error"
 
-  /cards/{id}:
-    get:
-      summary: Get a specific card
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Card details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Card'
+  /cards/{cardId}:
     put:
-      summary: Update a card
+      summary: "Update a card"
+      description: "Endpoint to update a card"
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: cardId
           required: true
           schema:
             type: string
@@ -66,87 +158,139 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Card'
+              type: object
+              properties:
+                name:
+                  type: string
+                closingDay:
+                  type: integer
+                dueDay:
+                  type: integer
+                cardType:
+                  type: string
+                lastFourDigits:
+                  type: string
+                userId:
+                  type: string
+              required:
+                - name
+                - closingDay
+                - dueDay
+                - cardType
+                - lastFourDigits
+                - userId
       responses:
         '200':
-          description: Card updated successfully
+          description: "Card updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  card:
+                    $ref: '#/components/schemas/Card'
+        '400':
+          description: "Invalid input"
+        '500':
+          description: "Server error"
     delete:
-      summary: Delete a card
+      summary: "Delete a card"
+      description: "Endpoint to delete a card"
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: cardId
           required: true
           schema:
             type: string
       responses:
         '200':
-          description: Card deleted successfully
+          description: "Card deleted successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: "Server error"
 
   /expenses:
     post:
-      summary: Create a new expense
+      summary: "Create a new expense"
+      description: "Endpoint to create a new expense"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Expense'
+              type: object
+              properties:
+                type:
+                  type: string
+                amount:
+                  type: number
+                date:
+                  type: string
+                  format: date-time
+                cardId:
+                  type: string
+                tag:
+                  type: string
+                installments:
+                  type: object
+                  properties:
+                    current:
+                      type: integer
+                    total:
+                      type: integer
+                userId:
+                  type: string
+              required:
+                - type
+                - amount
+                - date
+                - userId
       responses:
-        '201':
-          description: Expense created successfully
+        '200':
+          description: "Expense created successfully"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Expense'
+                type: object
+                properties:
+                  message:
+                    type: string
+                  expense:
+                    $ref: '#/components/schemas/Expense'
+        '400':
+          description: "Invalid input"
+        '500':
+          description: "Server error"
     get:
-      summary: List expenses
-      parameters:
-        - name: type
-          in: query
-          schema:
-            type: string
-            enum: ['Card', 'Variable', 'Fixed']
-        - name: startDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          schema:
-            type: string
-            format: date
+      summary: "Get all expenses"
+      description: "Endpoint to get all expenses"
       responses:
         '200':
-          description: List of expenses
+          description: "Expenses retrieved successfully"
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Expense'
+        '500':
+          description: "Server error"
 
-  /expenses/{id}:
-    get:
-      summary: Get a specific expense
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Expense details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Expense'
+  /expenses/{expenseId}:
     put:
-      summary: Update an expense
+      summary: "Update an expense"
+      description: "Endpoint to update an expense"
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: expenseId
           required: true
           schema:
             type: string
@@ -155,86 +299,103 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Expense'
+              type: object
+              properties:
+                amount:
+                  type: number
+                userId:
+                  type: string
+              required:
+                - amount
+                - userId
       responses:
         '200':
-          description: Expense updated successfully
-    delete:
-      summary: Delete an expense
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Expense deleted successfully
+          description: "Expense updated successfully"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  expense:
+                    $ref: '#/components/schemas/Expense'
+        '400':
+          description: "Invalid input"
+        '500':
+          description: "Server error"
 
   /incomes:
     post:
-      summary: Create a new income
+      summary: "Create a new income"
+      description: "Endpoint to create a new income"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Income'
+              type: object
+              properties:
+                amount:
+                  type: number
+                date:
+                  type: string
+                  format: date-time
+                source:
+                  type: string
+                tag:
+                  type: string
+                recurring:
+                  type: object
+                  properties:
+                    isRecurring:
+                      type: boolean
+                    frequency:
+                      type: string
+                userId:
+                  type: string
+              required:
+                - amount
+                - date
+                - userId
       responses:
-        '201':
-          description: Income created successfully
+        '200':
+          description: "Income created successfully"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Income'
+                type: object
+                properties:
+                  message:
+                    type: string
+                  income:
+                    $ref: '#/components/schemas/Income'
+        '400':
+          description: "Invalid input"
+        '500':
+          description: "Server error"
     get:
-      summary: List incomes
-      parameters:
-        - name: source
-          in: query
-          schema:
-            type: string
-        - name: startDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          schema:
-            type: string
-            format: date
+      summary: "Get all incomes"
+      description: "Endpoint to get all incomes"
       responses:
         '200':
-          description: List of incomes
+          description: "Incomes retrieved successfully"
           content:
             application/json:
               schema:
                 type: array
                 items:
                   $ref: '#/components/schemas/Income'
+        '500':
+          description: "Server error"
 
-  /incomes/{id}:
-    get:
-      summary: Get a specific income
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Income details
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Income'
+  /incomes/{incomeId}:
     put:
-      summary: Update an income
+      summary: "Update an income"
+      description: "Endpoint to update an income"
       parameters:
-        - name: id
-          in: path
+        - in: path
+          name: incomeId
           required: true
           schema:
             type: string
@@ -243,137 +404,89 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/Income'
+              type: object
+              properties:
+                amount:
+                  type: number
+                userId:
+                  type: string
+              required:
+                - amount
+                - userId
       responses:
         '200':
-          description: Income updated successfully
-    delete:
-      summary: Delete an income
-      parameters:
-        - name: id
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        '200':
-          description: Income deleted successfully
-
-  /reports/expenses:
-    get:
-      summary: Generate expense report
-      parameters:
-        - name: startDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          schema:
-            type: string
-            format: date
-      responses:
-        '200':
-          description: Expense report
+          description: "Income updated successfully"
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Report'
-
-  /reports/incomes:
-    get:
-      summary: Generate income report
-      parameters:
-        - name: startDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          schema:
-            type: string
-            format: date
-      responses:
-        '200':
-          description: Income report
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Report'
-
-  /reports/summary:
-    get:
-      summary: Generate financial summary report
-      parameters:
-        - name: startDate
-          in: query
-          schema:
-            type: string
-            format: date
-        - name: endDate
-          in: query
-          schema:
-            type: string
-            format: date
-      responses:
-        '200':
-          description: Financial summary report
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/Report'
+                type: object
+                properties:
+                  message:
+                    type: string
+                  income:
+                    $ref: '#/components/schemas/Income'
+        '400':
+          description: "Invalid input"
+        '500':
+          description: "Server error"
 
 components:
   schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+        username:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+      required:
+        - id
+        - username
+        - email
+        - role
     Card:
       type: object
-      required:
-        - name
-        - closingDay
-        - dueDay
-        - cardType
       properties:
+        id:
+          type: string
         name:
           type: string
         closingDay:
           type: integer
-          minimum: 1
-          maximum: 31
         dueDay:
           type: integer
-          minimum: 1
-          maximum: 31
         cardType:
           type: string
-          enum: ['Credit', 'Debit']
         lastFourDigits:
           type: string
-          pattern: '^\d{4}$'
-        creditLimit:
-          type: number
-          minimum: 0
-
+        userId:
+          type: string
+      required:
+        - id
+        - name
+        - closingDay
+        - dueDay
+        - cardType
+        - lastFourDigits
+        - userId
     Expense:
       type: object
-      required:
-        - type
-        - amount
-        - date
       properties:
+        id:
+          type: string
         type:
           type: string
-          enum: ['Card', 'Variable', 'Fixed']
         amount:
           type: number
-          minimum: 0
         date:
           type: string
-          format: date
-        card:
+          format: date-time
+        cardId:
           type: string
-          description: Card ID for card expenses
         tag:
           type: string
         installments:
@@ -381,28 +494,26 @@ components:
           properties:
             current:
               type: integer
-              minimum: 1
             total:
               type: integer
-              minimum: 1
-              maximum: 12
-        status:
+        userId:
           type: string
-          enum: ['Pending', 'Paid', 'Cancelled']
-
-    Income:
-      type: object
       required:
+        - id
+        - type
         - amount
         - date
-        - source
+        - userId
+    Income:
+      type: object
       properties:
+        id:
+          type: string
         amount:
           type: number
-          minimum: 0
         date:
           type: string
-          format: date
+          format: date-time
         source:
           type: string
         tag:
@@ -414,39 +525,10 @@ components:
               type: boolean
             frequency:
               type: string
-              enum: ['Daily', 'Weekly', 'Monthly', 'Yearly']
-        status:
+        userId:
           type: string
-          enum: ['Expected', 'Received', 'Cancelled']
-
-    Report:
-      type: object
       required:
-        - type
-        - startDate
-        - endDate
-        - totalAmount
-      properties:
-        type:
-          type: string
-          enum: ['Expense', 'Income', 'Summary']
-        startDate:
-          type: string
-          format: date
-        endDate:
-          type: string
-          format: date
-        totalAmount:
-          type: number
-        details:
-          type: array
-          items:
-            type: object
-            properties:
-              date:
-                type: string
-                format: date
-              amount:
-                type: number
-              category:
-                type: string
+        - id
+        - amount
+        - date
+        - userId
